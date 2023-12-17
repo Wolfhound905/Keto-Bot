@@ -143,27 +143,12 @@ class Utilities(Extension):
         ram = f"{psutil.virtual_memory().used >> 20} MB / {psutil.virtual_memory().total >> 20} MB"
         cpu = f"{psutil.cpu_percent(interval=1)}%"
         randstr = uuid.uuid4().hex.upper()[0:16]
-        users = 0
-        cached_users = set()
-        channels = 0
-        for guild in self.bot.guilds:
-            for user in guild.members:
-                if user.id in cached_users:
-                    continue  # Skip caching if the user is already cached
-                cached_users.add(user.id)  # Add user to the cached set
-                users += 1
-            for channel in guild.channels:
-                if channel.type == 0 or channel.type == 2 or channel.type == 5:
-                    channels += 1
-
         embed = Embed(title="Bot Stats")
         embed.color = await get_color(self.bot.user.avatar_url)
         embed.set_image(
             url=f"https://opengraph.githubassets.com/{randstr}/stekc/Keto-Bot"
         )
-        embed.add_field(name="Guilds", value=len(self.bot.guilds), inline=True)
-        embed.add_field(name="Channels", value=channels, inline=True)
-        embed.add_field(name="Users", value=users, inline=True)
+        embed.add_field(name="Guilds", value=len(self.bot.guilds), inline=False)
         embed.add_field(name="OS", value=platform.system(), inline=True)
         embed.add_field(name="CPU", value=cpu, inline=True)
         embed.add_field(name="RAM", value=ram, inline=True)

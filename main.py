@@ -13,15 +13,12 @@ if __name__ == "__main__":
     logger = init_logging()
 
     bot = CustomClient(
-        intents=Intents.MESSAGES
-        | Intents.MESSAGE_CONTENT
-        | Intents.GUILDS
-        | Intents.GUILD_MEMBERS,
+        intents=Intents.MESSAGES | Intents.MESSAGE_CONTENT | Intents.GUILDS,
         auto_defer=True,
         activity="https://stkc.win/",
         logger=logger,
         delete_unused_application_cmds=True,
-        fetch_members=True,
+        fetch_members=False,
         send_not_ready_messages=True,
         disable_dm_commands=True,
         debug_scope=os.getenv("MAIN_GUILD_ID")

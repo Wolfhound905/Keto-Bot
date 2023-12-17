@@ -60,7 +60,10 @@ class FixSocials(Extension):
 
     @listen()
     async def on_message_create(self, event: MessageCreate):
-        if event.message.author.bot or len(event.message.content) > 400:
+        if (
+            event.message.author.id == self.bot.user.id
+            or len(event.message.content) > 400
+        ):
             return
 
         (
