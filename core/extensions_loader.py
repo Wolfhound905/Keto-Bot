@@ -7,8 +7,6 @@ def load_extensions(bot: CustomClient):
 
     bot.logger.info("Loading Extensions...")
 
-    bot.load_extension("interactions.ext.jurigged")
-
     # go through all folders in the directory and load the extensions from all files
     # Note: files must end in .py
     for root, dirs, files in os.walk("extensions"):
