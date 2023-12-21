@@ -161,6 +161,17 @@ class Utilities(Extension):
         )
         await ctx.respond(embed=embed)
 
+        if os.getenv("TOPGG_TOKEN"):
+            url = "https://botblock.org/api/count"
+            data = {
+                "server_count": len(self.bot.guilds),
+                "bot_id": f'{self.bot.user.id}',
+                "top.gg": os.getenv("TOPGG_TOKEN"),
+            }
+
+            async with aiohttp.ClientSession() as session:
+                session.post(url, json=data)
+
 
 def setup(bot: CustomClient):
     """Let interactions load the extension"""
