@@ -211,9 +211,7 @@ class FixSocials(Extension):
         )
         reddit_regex = r"(https?://(?:www\.)?(?:old\.)?reddit\.com/r/[A-Za-z0-9_]+/(?:comments|s)/[A-Za-z0-9_]+(?:/[^/ ]+)?(?:/\w+)?)|(https?://(?:www\.)?redd\.it/[A-Za-z0-9]+)"
 
-        tiktok_urls = re.findall(
-            tiktok_regex, text
-        )
+        tiktok_urls = re.findall(tiktok_regex, text)
         instagram_urls = re.findall(instagram_regex, text)
         twitter_urls = re.findall(
             twitter_regex, text.replace("https://x.com/", "https://twitter.com/")
@@ -221,7 +219,6 @@ class FixSocials(Extension):
         reddit_urls = re.findall(reddit_regex, text)
 
         return tiktok_urls, instagram_urls, twitter_urls, reddit_urls
-    
 
     @cached(ttl=604800)
     async def quickvids(self, tiktok_url):

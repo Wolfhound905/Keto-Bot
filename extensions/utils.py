@@ -14,6 +14,7 @@ from interactions import (
     Buckets,
 )
 from utils.colorthief import get_color
+from utils.topgg import topgg_refresh
 
 
 class Utilities(Extension):
@@ -58,7 +59,7 @@ class Utilities(Extension):
         required=True,
         opt_type=OptionType.STRING,
     )
-    @cooldown(Buckets.USER, 1, 10)
+    @cooldown(Buckets.GUILD, 1, 10)
     async def currency(
         self, ctx: SlashContext, amount: str, from_currency: str, to_currency: str
     ):
@@ -114,10 +115,14 @@ class Utilities(Extension):
             return await ctx.respond("Amount must be a number.", ephemeral=True)
 
         if from_currency.upper() not in currency_codes:
-            return await ctx.respond(f"Invalid base currency `{from_currency}`.", ephemeral=True)
+            return await ctx.respond(
+                f"Invalid base currency `{from_currency}`.", ephemeral=True
+            )
 
         if to_currency.upper() not in currency_codes:
-            return await ctx.respond(f"Invalid currency to convert to (`{to_currency}`).", ephemeral=True)
+            return await ctx.respond(
+                f"Invalid currency to convert to (`{to_currency}`).", ephemeral=True
+            )
 
         data = await self.get_currency_conversion(from_currency, to_currency, api_key)
         if data is None:
@@ -139,6 +144,7 @@ class Utilities(Extension):
         await ctx.respond(embed=embed)
 
     @slash_command(name="stats", description="View bot statistics")
+    @cooldown(Buckets.GUILD, 1, 10)
     async def stats(self, ctx: SlashContext):
         ram = f"{psutil.virtual_memory().used >> 20} MB / {psutil.virtual_memory().total >> 20} MB"
         cpu = f"{psutil.cpu_percent(interval=1)}%"
@@ -160,17 +166,7 @@ class Utilities(Extension):
             text="https://github.com/stekc/keto-bot", icon_url=self.bot.owner.avatar_url
         )
         await ctx.respond(embed=embed)
-
-        if os.getenv("TOPGG_TOKEN"):
-            url = "https://botblock.org/api/count"
-            data = {
-                "server_count": len(self.bot.guilds),
-                "bot_id": f'{self.bot.user.id}',
-                "top.gg": os.getenv("TOPGG_TOKEN"),
-            }
-
-            async with aiohttp.ClientSession() as session:
-                await session.post(url, json=data)
+        await topgg_refresh(self)
 
 
 def setup(bot: CustomClient):

@@ -1,6 +1,7 @@
 import os
+from utils.topgg import update_topgg_count
 from dotenv import load_dotenv
-from interactions import Intents
+from interactions import Intents, listen
 from interactions.ext.debug_extension import DebugExtension
 from core.init_logging import init_logging
 from core.base import CustomClient
@@ -33,5 +34,9 @@ if __name__ == "__main__":
         DebugExtension(bot=bot)
 
     load_extensions(bot=bot)
+
+    @listen()
+    async def on_startup(self):
+        update_topgg_count.start(self)
 
     bot.start(os.getenv("DISCORD_TOKEN"))
