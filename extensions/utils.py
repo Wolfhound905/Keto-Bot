@@ -170,7 +170,7 @@ class Utilities(Extension):
             }
 
             async with aiohttp.ClientSession() as session:
-                session.post(url, json=data)
+                await session.post(url, json=data)
 
 
 def setup(bot: CustomClient):
