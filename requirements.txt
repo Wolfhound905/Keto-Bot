@@ -1,8 +1,7 @@
-discord-py-interactions==5.5.1
+discord-py-interactions==5.11.0
 python-dotenv==0.20.0
 aiocache==0.12.1
-colorthief==0.2.1
-jurigged==0.5.6
+fast-colorthief==0.0.5
 psutil==5.9.6
 humanize==4.8.0
 python-dateutil==2.8.2

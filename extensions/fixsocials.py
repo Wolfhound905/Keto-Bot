@@ -204,18 +204,15 @@ class FixSocials(Extension):
 
     @cached(ttl=604800)
     async def extract_urls(self, text):
-        tiktok_regex = r"(https:\/\/(www.)?((vm|vt).tikt(o|x)k.com\/[A-Za-z0-9]+|(vx)?tikt(o|x)k.com\/@[\w.]+\/video\/[\d]+\/?|(vx)?tikt(o|x)k.com\/t\/[a-zA-Z0-9]+))"
+        tiktok_regex = r"(https:\/\/(www\.)?(vt|vm)\.tiktok\.com\/[A-Za-z0-9]+|(vx)?tiktok\.com\/@[\w.]+\/video\/[\d]+\/?|(vx)?tiktok\.com\/t\/[a-zA-Z0-9]+)"
         instagram_regex = r"(https:\/\/(www.)?instagram\.com\/(?:p|reel)\/([^/?#&]+))"
         twitter_regex = (
             r"(https:\/\/(www.)?(twitter|x)\.com\/[a-zA-Z0-9_]+\/status\/[0-9]+)"
         )
-        reddit_regex = r"(https?://(?:www\.)?(?:old\.)?reddit\.com/r/[A-Za-z0-9_]+/comments/[A-Za-z0-9]+)|(https?://(?:www\.)?redd\.it/[A-Za-z0-9]+)"
+        reddit_regex = r"(https?://(?:www\.)?(?:old\.)?reddit\.com/r/[A-Za-z0-9_]+/(?:comments|s)/[A-Za-z0-9_]+(?:/[^/ ]+)?(?:/\w+)?)|(https?://(?:www\.)?redd\.it/[A-Za-z0-9]+)"
 
         tiktok_urls = re.findall(
-            tiktok_regex,
-            text.replace("https://vm.tiktok.com/", "https://tiktok.com/").replace(
-                "https://vt.tiktok.com/", "https://tiktok.com/"
-            ),
+            tiktok_regex, text
         )
         instagram_urls = re.findall(instagram_regex, text)
         twitter_urls = re.findall(
@@ -224,6 +221,7 @@ class FixSocials(Extension):
         reddit_urls = re.findall(reddit_regex, text)
 
         return tiktok_urls, instagram_urls, twitter_urls, reddit_urls
+    
 
     @cached(ttl=604800)
     async def quickvids(self, tiktok_url):

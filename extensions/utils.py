@@ -114,10 +114,10 @@ class Utilities(Extension):
             return await ctx.respond("Amount must be a number.", ephemeral=True)
 
         if from_currency.upper() not in currency_codes:
-            return await ctx.respond("Invalid base currency.", ephemeral=True)
+            return await ctx.respond(f"Invalid base currency `{from_currency}`.", ephemeral=True)
 
         if to_currency.upper() not in currency_codes:
-            return await ctx.respond("Invalid currency to convert to.", ephemeral=True)
+            return await ctx.respond(f"Invalid currency to convert to (`{to_currency}`).", ephemeral=True)
 
         data = await self.get_currency_conversion(from_currency, to_currency, api_key)
         if data is None:
