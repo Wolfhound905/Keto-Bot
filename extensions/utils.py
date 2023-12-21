@@ -59,7 +59,7 @@ class Utilities(Extension):
         required=True,
         opt_type=OptionType.STRING,
     )
-    @cooldown(Buckets.GUILD, 1, 10)
+    @cooldown(Buckets.USER, 2, 30)
     async def currency(
         self, ctx: SlashContext, amount: str, from_currency: str, to_currency: str
     ):
