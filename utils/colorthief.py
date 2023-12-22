@@ -6,7 +6,7 @@ from aiohttp import ClientSession, ClientTimeout
 
 @cached(ttl=604800)
 async def get_color(query):
-    quality = os.getenv("COLOR_FETCH_QUALITY", default="off")
+    quality = os.getenv("COLOR_FETCH_QUALITY", default="low")
 
     if quality == "off":
         return 0x505050
