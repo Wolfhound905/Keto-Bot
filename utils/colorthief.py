@@ -1,4 +1,4 @@
-import io
+import io, re
 import fast_colorthief
 from aiocache import cached
 from urllib.request import urlopen, Request
@@ -7,6 +7,9 @@ from urllib.request import urlopen, Request
 @cached(ttl=604800)
 async def get_color(query):
     try:
+        # speed up color fetching for discord avatars
+        if any(s in query for s in {'cdn.discordapp.com/icons/', 'cdn.discordapp.com/avatars/'}):
+            query = re.sub(r'\?size=(32|64|128|256|512|1024|2048|4096)$', '?size=16', query)
         req = Request(query)
         req.add_header("User-Agent", "Keto - stkc.win")
         content = urlopen(req, timeout=5).read()
