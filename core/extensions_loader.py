@@ -1,8 +1,8 @@
 import os
-from core.base import CustomClient
+from interactions import AutoShardedClient
 
 
-def load_extensions(bot: CustomClient):
+def load_extensions(bot: AutoShardedClient):
     """Automatically load all extension in the ./extensions folder"""
 
     bot.logger.info("Loading Extensions...")

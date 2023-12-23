@@ -1,10 +1,9 @@
 import os
 from utils.topgg import update_topgg_count
 from dotenv import load_dotenv
-from interactions import Intents, listen
+from interactions import Intents, AutoShardedClient, listen
 from interactions.ext.debug_extension import DebugExtension
 from core.init_logging import init_logging
-from core.base import CustomClient
 from core.extensions_loader import load_extensions
 
 
@@ -13,7 +12,7 @@ if __name__ == "__main__":
 
     logger = init_logging()
 
-    bot = CustomClient(
+    bot = AutoShardedClient(
         intents=Intents.MESSAGES | Intents.MESSAGE_CONTENT | Intents.GUILDS,
         auto_defer=True,
         activity="https://stkc.win/",

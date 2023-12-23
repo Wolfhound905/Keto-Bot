@@ -1,7 +1,7 @@
 import io, aiohttp, re
-from core.base import CustomClient
 from interactions import (
     Permissions,
+    AutoShardedClient,
     slash_default_member_permission,
     OptionType,
     Extension,
@@ -20,7 +20,7 @@ from interactions import (
 
 
 class Emojis(Extension):
-    bot: CustomClient
+    bot: AutoShardedClient
 
     @slash_command(name="jumbo", description="Jumbo an emoji")
     @slash_option(
@@ -135,5 +135,5 @@ class Emojis(Extension):
                 )
 
 
-def setup(bot: CustomClient):
+def setup(bot: AutoShardedClient):
     Emojis(bot)

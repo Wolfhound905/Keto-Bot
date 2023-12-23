@@ -1,8 +1,8 @@
-from core.base import CustomClient
 from interactions import (
     Button,
     ButtonStyle,
     OptionType,
+    AutoShardedClient,
     Extension,
     ComponentContext,
     Embed,
@@ -17,7 +17,7 @@ from utils.colorthief import get_color
 
 
 class Users(Extension):
-    bot: CustomClient
+    bot: AutoShardedClient
     avatar_button = Button(
         style=ButtonStyle.PRIMARY, label="View Other Avatar", custom_id="avatar_button"
     )
@@ -106,5 +106,5 @@ class Users(Extension):
         await ctx.edit_origin(embed=embed, components=self.avatar_button)
 
 
-def setup(bot: CustomClient):
+def setup(bot: AutoShardedClient):
     Users(bot)

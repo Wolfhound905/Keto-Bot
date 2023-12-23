@@ -2,7 +2,7 @@ import os
 from interactions import Client, listen
 
 
-class CustomClient(Client):
+class AutoShardedClient(Client):
     """Subclass of interactions.Client with on_startup event"""
 
     @listen()

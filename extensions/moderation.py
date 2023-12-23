@@ -2,10 +2,9 @@ import aiohttp, datetime
 from dateutil.relativedelta import relativedelta
 from dateutil.parser import parse
 from humanize import naturaldelta
-from core.base import CustomClient
 from interactions import (
     Extension,
-    Embed,
+    AutoShardedClient,
     SlashContext,
     slash_command,
     slash_option,
@@ -16,7 +15,7 @@ from interactions import (
 
 
 class Moderation(Extension):
-    bot: CustomClient
+    bot: AutoShardedClient
 
     @slash_command(name="mute", description="Mute a user")
     @slash_option(
@@ -85,7 +84,7 @@ class Moderation(Extension):
         await ctx.send(f"{user.mention} has been muted for {duration_str}.")
 
 
-def setup(bot: CustomClient):
+def setup(bot: AutoShardedClient):
     """Let interactions load the extension"""
 
     Moderation(bot)

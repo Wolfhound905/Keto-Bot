@@ -1,8 +1,8 @@
 import re, aiohttp, json, asyncio
 from aiocache import cached
-from core.base import CustomClient
 from interactions import (
     CommandType,
+    AutoShardedClient,
     AllowedMentions,
     Button,
     ButtonStyle,
@@ -18,7 +18,7 @@ from interactions.api.events import MessageCreate
 
 
 class FixSocials(Extension):
-    bot: CustomClient
+    bot: AutoShardedClient
 
     @context_menu(name="Fix Social Embed", context_type=CommandType.MESSAGE)
     @cooldown(Buckets.USER, 1, 3)
@@ -255,7 +255,7 @@ class FixSocials(Extension):
             return False
 
 
-def setup(bot: CustomClient):
+def setup(bot: AutoShardedClient):
     """Let interactions load the extension"""
 
     FixSocials(bot)

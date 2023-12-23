@@ -1,8 +1,8 @@
 import aiohttp, json, asyncio
 from aiocache import cached
-from core.base import CustomClient
 from interactions import (
     CommandType,
+    AutoShardedClient,
     Button,
     AllowedMentions,
     Embed,
@@ -20,7 +20,7 @@ from utils.colorthief import get_color
 
 
 class Songs(Extension):
-    bot: CustomClient
+    bot: AutoShardedClient
     import re
 
     song_pattern = re.compile(
@@ -143,6 +143,6 @@ class Songs(Extension):
                 return title, artist, thumbnail, spotify, applemusic
 
 
-def setup(bot: CustomClient):
+def setup(bot: AutoShardedClient):
     """Let interactions load the extension"""
     Songs(bot)

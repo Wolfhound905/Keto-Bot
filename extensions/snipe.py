@@ -1,7 +1,6 @@
-import os
-from core.base import CustomClient
 from interactions import (
     listen,
+    AutoShardedClient,
     Extension,
     Embed,
     SlashContext,
@@ -14,7 +13,7 @@ from utils.colorthief import get_color
 
 
 class Snipe(Extension):
-    bot: CustomClient
+    bot: AutoShardedClient
     deleted_msgs = {}
 
     @listen()
@@ -99,7 +98,7 @@ class Snipe(Extension):
             await ctx.respond(embed=embed)
 
 
-def setup(bot: CustomClient):
+def setup(bot: AutoShardedClient):
     """Let interactions load the extension"""
 
     Snipe(bot)

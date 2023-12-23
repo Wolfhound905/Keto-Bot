@@ -1,10 +1,10 @@
 import os, aiohttp, psutil, platform, uuid
 from dotenv import load_dotenv
 from aiocache import cached
-from core.base import CustomClient
 from interactions import (
     Extension,
     Embed,
+    AutoShardedClient,
     SlashContext,
     __version__,
     slash_command,
@@ -18,7 +18,7 @@ from utils.topgg import topgg_refresh
 
 
 class Utilities(Extension):
-    bot: CustomClient
+    bot: AutoShardedClient
     load_dotenv()
 
     @cached(ttl=86400)
@@ -154,14 +154,15 @@ class Utilities(Extension):
         embed.set_image(
             url=f"https://opengraph.githubassets.com/{randstr}/stekc/Keto-Bot"
         )
-        embed.add_field(name="Guilds", value=len(self.bot.guilds), inline=False)
+        embed.add_field(name="Guilds (Shards)", value=str(len(self.bot.guilds))+' ('+str(len(set(state.shard_id for state in self.bot.shards)))+')', inline=False)
+        #embed.add_field(name="Shards", value=str(len(set(state.shard_id for state in self.bot.shards))), inline=False)
         embed.add_field(name="OS", value=platform.system(), inline=True)
         embed.add_field(name="CPU", value=cpu, inline=True)
         embed.add_field(name="RAM", value=ram, inline=True)
         embed.add_field(
-            name="Python Version", value=platform.python_version(), inline=True
+            name="Python Version", value=platform.python_version(), inline=False
         )
-        embed.add_field(name="interactions.py Version", value=__version__, inline=True)
+        embed.add_field(name="interactions.py Version", value=__version__, inline=False)
         embed.set_footer(
             text="https://github.com/stekc/keto-bot", icon_url=self.bot.owner.avatar_url
         )
@@ -169,7 +170,7 @@ class Utilities(Extension):
         await topgg_refresh(self)
 
 
-def setup(bot: CustomClient):
+def setup(bot: AutoShardedClient):
     """Let interactions load the extension"""
 
     Utilities(bot)
