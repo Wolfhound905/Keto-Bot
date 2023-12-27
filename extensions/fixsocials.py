@@ -1,4 +1,4 @@
-import re, aiohttp, json, asyncio
+import re, aiohttp, json, asyncio, pycurl
 from aiocache import cached
 from interactions import (
     CommandType,
@@ -105,6 +105,12 @@ class FixSocials(Extension):
                     await asyncio.sleep(0.1)
                     await message.suppress_embeds()
             else:
+                url_list = list(url)
+                url_list[0] = await self.get_final_url(url_list[0])
+                url_list[0] = url_list[0].replace(
+                    "https://www.tiktok.com/", "https://tiktok.com/"
+                )
+                url = tuple(url_list)
                 if not url[0].startswith("https://vxtiktok.com/") and not url[
                     0
                 ].startswith("https://vxtiktok.com/"):
@@ -203,8 +209,19 @@ class FixSocials(Extension):
                     await message.suppress_embeds()
 
     @cached(ttl=604800)
+    async def get_final_url(self, url):
+        c = pycurl.Curl()
+        c.setopt(c.URL, url)
+        c.setopt(c.FOLLOWLOCATION, True)
+        c.setopt(pycurl.WRITEFUNCTION, lambda bytes: len(bytes))
+        c.perform()
+        redirect = c.getinfo(c.EFFECTIVE_URL)
+        c.close()
+        return redirect.partition('?')[0]
+
+    @cached(ttl=604800)
     async def extract_urls(self, text):
-        tiktok_regex = r"(https:\/\/(www\.)?(vt|vm)\.tiktok\.com\/[A-Za-z0-9]+|(vx)?tiktok\.com\/@[\w.]+\/video\/[\d]+\/?|(vx)?tiktok\.com\/t\/[a-zA-Z0-9]+)"
+        tiktok_regex = r"(https:\/\/(www\.)?(vt|vm)\.tiktok\.com\/[A-Za-z0-9]+|https:\/\/(vx)?tiktok\.com\/@[\w.]+\/video\/[\d]+\/?|https:\/\/(vx)?tiktok\.com\/t\/[a-zA-Z0-9]+\/?)"
         instagram_regex = r"(https:\/\/(www.)?instagram\.com\/(?:p|reel)\/([^/?#&]+))"
         twitter_regex = (
             r"(https:\/\/(www.)?(twitter|x)\.com\/[a-zA-Z0-9_]+\/status\/[0-9]+)"
