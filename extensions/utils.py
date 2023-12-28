@@ -154,7 +154,14 @@ class Utilities(Extension):
         embed.set_image(
             url=f"https://opengraph.githubassets.com/{randstr}/stekc/Keto-Bot"
         )
-        embed.add_field(name="Guilds (Shards)", value=str(len(self.bot.guilds))+' ('+str(len(set(state.shard_id for state in self.bot.shards)))+')', inline=False)
+        embed.add_field(
+            name="Guilds (Shards)",
+            value=str(len(self.bot.guilds))
+            + " ("
+            + str(len(set(state.shard_id for state in self.bot.shards)))
+            + ")",
+            inline=False,
+        )
         embed.add_field(name="OS", value=platform.system(), inline=True)
         embed.add_field(name="CPU", value=cpu, inline=True)
         embed.add_field(name="RAM", value=ram, inline=True)

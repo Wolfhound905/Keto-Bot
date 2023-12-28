@@ -15,6 +15,7 @@ from interactions import (
     Buckets,
 )
 from interactions.api.events import MessageCreate
+from utils.topgg import topgg_vote_embed
 
 
 class FixSocials(Extension):
@@ -87,6 +88,7 @@ class FixSocials(Extension):
         reddit_urls,
         components=None,
     ):
+        vote_button, embed = await topgg_vote_embed()
         for url in tiktok_urls:
             quickvids_url = await self.quickvids(
                 url[0].replace("https://vxtiktok.com/", "https://tiktok.com/")
@@ -104,6 +106,10 @@ class FixSocials(Extension):
                     )
                     await asyncio.sleep(0.1)
                     await message.suppress_embeds()
+                    if vote_button and embed:
+                        await message.channel.send(
+                            components=vote_button, embed=embed, delete_after=20
+                        )
             else:
                 url_list = list(url)
                 url_list[0] = await self.get_final_url(url_list[0])
@@ -131,6 +137,10 @@ class FixSocials(Extension):
                         )
                         await asyncio.sleep(0.1)
                         await message.suppress_embeds()
+                        if vote_button and embed:
+                            await message.channel.send(
+                                components=vote_button, embed=embed, delete_after=20
+                            )
 
         for url in instagram_urls:
             if isinstance(message, ContextMenuContext):
@@ -150,6 +160,10 @@ class FixSocials(Extension):
                 )
                 await asyncio.sleep(0.1)
                 await message.suppress_embeds()
+                if vote_button and embed:
+                    await message.channel.send(
+                        components=vote_button, embed=embed, delete_after=20
+                    )
 
         for url in reddit_urls:
             if isinstance(message, ContextMenuContext):
@@ -169,6 +183,10 @@ class FixSocials(Extension):
                 )
                 await asyncio.sleep(0.1)
                 await message.suppress_embeds()
+                if vote_button and embed:
+                    await message.channel.send(
+                        components=vote_button, embed=embed, delete_after=20
+                    )
 
         for url in twitter_urls:
             await asyncio.sleep(1)
@@ -197,6 +215,10 @@ class FixSocials(Extension):
                         )
                         await asyncio.sleep(0.1)
                         await message.suppress_embeds()
+                        if vote_button and embed:
+                            await message.channel.send(
+                                components=vote_button, embed=embed, delete_after=20
+                            )
                 else:
                     await message.reply(
                         url[0].replace(
@@ -207,6 +229,10 @@ class FixSocials(Extension):
                     )
                     await asyncio.sleep(0.1)
                     await message.suppress_embeds()
+                    if vote_button and embed:
+                        await message.channel.send(
+                            components=vote_button, embed=embed, delete_after=20
+                        )
 
     @cached(ttl=604800)
     async def get_final_url(self, url):
@@ -217,7 +243,7 @@ class FixSocials(Extension):
         c.perform()
         redirect = c.getinfo(c.EFFECTIVE_URL)
         c.close()
-        return redirect.partition('?')[0]
+        return redirect.partition("?")[0]
 
     @cached(ttl=604800)
     async def extract_urls(self, text):
