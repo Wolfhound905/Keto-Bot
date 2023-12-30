@@ -20,7 +20,7 @@ async def topgg_refresh(self):
 
 async def topgg_vote_embed():
     vote_url = os.getenv("TOPGG_VOTE_URL")
-    number = random.randint(1, 100)
+    number = random.randint(1, 75)
 
     if not vote_url:
         components, embed = None, None
@@ -29,12 +29,20 @@ async def topgg_vote_embed():
         components, embed = None, None
         return components, embed
 
-    components = Button(
-        style=ButtonStyle.URL,
-        label="Vote on Top.gg",
-        url=vote_url,
-        emoji="<:topgg:1189809400085495839>",
-    )
+    components = [
+        Button(
+            style=ButtonStyle.URL,
+            label="Vote on Top.gg",
+            url=vote_url,
+            emoji="<:topgg:1189809400085495839>",
+        ),
+        Button(
+            style=ButtonStyle.URL,
+            label="Check out Spamdrain",
+            url="https://spamdrain.com/?cp=c_255509",
+            emoji="<:spamdrain:1190560566364880896>",
+        ),
+    ]
     embed = Embed(
         description="*Enjoying Keto? Please vote, it helps the bot grow!*",
         color=0xFF3366,
