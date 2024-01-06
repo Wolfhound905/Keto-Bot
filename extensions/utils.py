@@ -173,7 +173,6 @@ class Utilities(Extension):
             text="https://github.com/stekc/keto-bot", icon_url=self.bot.owner.avatar_url
         )
         await ctx.respond(embed=embed)
-        await topgg_refresh(self)
 
 
 def setup(bot: AutoShardedClient):
