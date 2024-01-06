@@ -189,50 +189,26 @@ class FixSocials(Extension):
                     )
 
         for url in twitter_urls:
-            await asyncio.sleep(1)
-
             if isinstance(message, ContextMenuContext):
                 await message.respond(
                     url[0].replace("https://twitter.com/", "https://vxtwitter.com/"),
                     components=components,
                     allowed_mentions=AllowedMentions.none(),
                 )
-                await asyncio.sleep(0.1)
             else:
-                if message.embeds:
-                    embed = message.embeds[0]
-                    embed_dict = embed.to_dict()
-                    if embed_dict.get("image") or (
-                        embed_dict.get("thumbnail")
-                        and "video_thumb" in embed_dict["thumbnail"].get("url", "")
-                    ):
-                        await message.reply(
-                            url[0].replace(
-                                "https://twitter.com/", "https://vxtwitter.com/"
-                            ),
-                            components=components,
-                            allowed_mentions=AllowedMentions.none(),
-                        )
-                        await asyncio.sleep(0.1)
-                        await message.suppress_embeds()
-                        if vote_button and embed:
-                            await message.channel.send(
-                                components=vote_button, embed=embed, delete_after=20
-                            )
-                else:
-                    await message.reply(
+                await message.reply(
                         url[0].replace(
                             "https://twitter.com/", "https://vxtwitter.com/"
                         ),
                         components=components,
                         allowed_mentions=AllowedMentions.none(),
                     )
-                    await asyncio.sleep(0.1)
-                    await message.suppress_embeds()
-                    if vote_button and embed:
-                        await message.channel.send(
-                            components=vote_button, embed=embed, delete_after=20
-                        )
+                await asyncio.sleep(0.1)
+                await message.suppress_embeds()
+                if vote_button and embed:
+                    await message.channel.send(
+                        components=vote_button, embed=embed, delete_after=20
+                    )
 
     @cached(ttl=604800)
     async def get_final_url(self, url):
