@@ -197,12 +197,10 @@ class FixSocials(Extension):
                 )
             else:
                 await message.reply(
-                        url[0].replace(
-                            "https://twitter.com/", "https://vxtwitter.com/"
-                        ),
-                        components=components,
-                        allowed_mentions=AllowedMentions.none(),
-                    )
+                    url[0].replace("https://twitter.com/", "https://vxtwitter.com/"),
+                    components=components,
+                    allowed_mentions=AllowedMentions.none(),
+                )
                 await asyncio.sleep(0.1)
                 await message.suppress_embeds()
                 if vote_button and embed:
