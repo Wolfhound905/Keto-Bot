@@ -144,7 +144,7 @@ class Utilities(Extension):
         await ctx.respond(embed=embed)
 
     @slash_command(name="stats", description="View bot statistics")
-    @cooldown(Buckets.GUILD, 1, 10)
+    @cooldown(Buckets.GUILD, 1, 5)
     async def stats(self, ctx: SlashContext):
         ram = f"{psutil.virtual_memory().used >> 20} MB / {psutil.virtual_memory().total >> 20} MB"
         cpu = f"{psutil.cpu_percent(interval=1)}%"
