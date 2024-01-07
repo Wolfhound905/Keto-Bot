@@ -134,6 +134,25 @@ class Emojis(Extension):
                     f"Emoji <{'a' if e.animated else ''}:{e.name}:{e.id}> `:{e.name}:` was added."
                 )
 
+    @slash_command(name="delete", description="Delete an emoji")
+    @slash_option(
+        name="emoji",
+        description="Discord emoji",
+        required=True,
+        opt_type=OptionType.STRING,
+    )
+    @slash_default_member_permission(Permissions.MANAGE_EMOJIS_AND_STICKERS)
+    @cooldown(Buckets.USER, 1, 5)
+    async def delete(self, ctx: SlashContext, emoji: str):
+        emoji = PartialEmoji.from_str(emoji)
+
+        if not emoji.id:
+            return await ctx.send("Invalid emoji.", ephemeral=True)
+        
+        emoji = await ctx.guild.fetch_custom_emoji(emoji)
+        await emoji.delete()
+        await ctx.send(f"Emoji `:{emoji.name}:` was deleted.")
+
 
 def setup(bot: AutoShardedClient):
     Emojis(bot)
