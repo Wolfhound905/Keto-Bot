@@ -1,4 +1,4 @@
-import os, aiohttp, psutil, platform, uuid
+import os, aiohttp, psutil, platform, uuid, time, datetime
 from dotenv import load_dotenv
 from aiocache import cached
 from interactions import (
@@ -14,11 +14,12 @@ from interactions import (
     Buckets,
 )
 from utils.colorthief import get_color
-from utils.topgg import topgg_refresh
 
 
 class Utilities(Extension):
     bot: AutoShardedClient
+    global start_time
+    start_time = time.time()
     load_dotenv()
 
     @cached(ttl=86400)
@@ -148,6 +149,11 @@ class Utilities(Extension):
     async def stats(self, ctx: SlashContext):
         ram = f"{psutil.virtual_memory().used >> 20} MB / {psutil.virtual_memory().total >> 20} MB"
         cpu = f"{psutil.cpu_percent(interval=1)}%"
+        uptime = (
+            f"{int(round((time.time() - start_time) / 86400))}d {int(round((time.time() - start_time) % 86400 / 3600))}h {int(round((time.time() - start_time) % 3600 / 60))}m"
+            if int(round((time.time() - start_time) / 86400)) > 0
+            else f"{int(round((time.time() - start_time) % 86400 / 3600))}h {int(round((time.time() - start_time) % 3600 / 60))}m"
+        )
         randstr = uuid.uuid4().hex.upper()[0:16]
         embed = Embed(title="Bot Stats")
         embed.color = await get_color(self.bot.user.avatar_url)
@@ -166,9 +172,14 @@ class Utilities(Extension):
         embed.add_field(name="CPU", value=cpu, inline=True)
         embed.add_field(name="RAM", value=ram, inline=True)
         embed.add_field(
-            name="Python Version", value=platform.python_version(), inline=False
+            name="Bot Uptime",
+            value=uptime,
+            inline=True,
         )
-        embed.add_field(name="interactions.py Version", value=__version__, inline=False)
+        embed.add_field(
+            name="Python Version", value=platform.python_version(), inline=True
+        )
+        embed.add_field(name="interactions.py Version", value=__version__, inline=True)
         embed.set_footer(
             text="https://github.com/stekc/keto-bot", icon_url=self.bot.owner.avatar_url
         )

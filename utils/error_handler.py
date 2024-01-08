@@ -45,22 +45,26 @@ class ErrorHandling(Extension):
             await event.ctx.send(embed=embed)
 
         embed = {
-            "title": f"{guild_name + ' (' + str(guild_id) + ') ' + str(user_name) + ' (' + str(user_id) + ') - ' + os.getenv('PROJECT_NAME') if event.ctx else 'An error occured - '+os.getenv('PROJECT_NAME')}",
+            "title": f"{'A command errored in ' + guild_name + ' (' + str(guild_id) + ') - ' + str(user_name) + ' (' + str(user_id) + ') - ' + os.getenv('PROJECT_NAME') if event and event.ctx else 'An error occurred - ' + os.getenv('PROJECT_NAME')}",
             "description": f"```{tb_str[:4090]}```",
             "color": 16711680,
         }
 
-        await self.send_error_webhook(embed, error_id)
+        await self.send_error_webhook(embed, event, error_id)
 
-    async def send_error_webhook(self, embed, code=None):
+    async def send_error_webhook(self, embed, event=None, code=None):
         payload = {"content": f"`{code}`" if code else None, "embeds": [embed]}
 
         async with aiohttp.ClientSession() as session:
-            await session.post(
+            async with session.post(
                 os.getenv("ERROR_WEBHOOK_URL"),
                 data=json.dumps(payload),
                 headers={"Content-Type": "application/json"},
-            )
+            ) as resp:
+                if not resp.status in [200, 204]:
+                    traceback.print_exception(
+                        type(event.error), event.error, event.error.__traceback__
+                    )
 
 
 def setup(bot: AutoShardedClient):

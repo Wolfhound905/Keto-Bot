@@ -117,6 +117,8 @@ class Emojis(Extension):
     async def steal(self, ctx: SlashContext, emoji: str, name: str = None):
         get_emoji = PartialEmoji.from_str(emoji)
 
+        if name and not name.isalnum():
+            return await ctx.send("Emoji name must be alphanumeric.", ephemeral=True)
         if get_emoji:
             url = f"https://cdn.discordapp.com/emojis/{get_emoji.id}.{('gif' if get_emoji.animated else 'png')}"
         elif name is None:
@@ -146,11 +148,16 @@ class Emojis(Extension):
     async def delete(self, ctx: SlashContext, emoji: str):
         emoji = PartialEmoji.from_str(emoji)
 
-        if not emoji.id:
-            return await ctx.send("Invalid emoji.", ephemeral=True)
+        if not emoji:
+            return await ctx.send("Emoji not found.", ephemeral=True)
 
         emoji = await ctx.guild.fetch_custom_emoji(emoji)
-        await emoji.delete()
+        try:
+            await emoji.delete()
+        except AttributeError:
+            return await ctx.send(
+                "Emoji not found, it might not belong to this server.", ephemeral=True
+            )
         await ctx.send(f"Emoji `:{emoji.name}:` was deleted.")
 
 

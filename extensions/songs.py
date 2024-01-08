@@ -31,7 +31,10 @@ class Songs(Extension):
 
     @cached(ttl=604800)
     async def process_song_link(self, link):
-        title, artist, thumbnail, spotify, applemusic = await self.get_music(link)
+        try:
+            title, artist, thumbnail, spotify, applemusic = await self.get_music(link)
+        except TypeError:
+            return None, None
         spotify_button = Button(
             style=ButtonStyle.URL, emoji="<:spotify:1140397216066977903>", url=spotify
         )
@@ -98,6 +101,8 @@ class Songs(Extension):
             return
 
         embed, components = await self.process_song_link(link)
+        if not (embed and components):
+            return
         if fmbot:
             await event.message.delete()
             await event.message.channel.send(components=components, embed=embed)
