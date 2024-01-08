@@ -29,7 +29,7 @@ class ErrorHandling(Extension):
 
         embed = {
             "title": f"{guild_name + ' (' + str(guild_id) + ') ' + str(user_name) + ' (' + str(user_id) + ')' if event.ctx else 'An error occured'}",
-            "description": f"```{tb_str}```",
+            "description": f"```{tb_str[:4090]}```",
             "color": 16711680,
         }
 
