@@ -19,6 +19,8 @@ def load_extensions(bot: AutoShardedClient):
                 # load the extension
                 bot.load_extension(python_import_path)
 
+    bot.load_extension("utils.error_handler")
+
     bot.logger.info(
         f"< {len(bot.interactions_by_scope.get(0, []))} > Global Interactions Loaded"
     )

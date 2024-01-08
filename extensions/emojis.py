@@ -148,7 +148,7 @@ class Emojis(Extension):
 
         if not emoji.id:
             return await ctx.send("Invalid emoji.", ephemeral=True)
-        
+
         emoji = await ctx.guild.fetch_custom_emoji(emoji)
         await emoji.delete()
         await ctx.send(f"Emoji `:{emoji.name}:` was deleted.")

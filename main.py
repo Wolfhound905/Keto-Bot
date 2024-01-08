@@ -24,9 +24,7 @@ if __name__ == "__main__":
         debug_scope=os.getenv("MAIN_GUILD_ID")
         if os.getenv("SINGLE_SERVER") == "true"
         else False,
-        send_command_tracebacks=True
-        if os.getenv("SEND_TRACEBACKS") == "true"
-        else False,
+        send_command_tracebacks=False,
     )
 
     if os.getenv("LOAD_DEBUG_COMMANDS") == "true":
