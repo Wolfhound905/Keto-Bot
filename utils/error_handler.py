@@ -10,6 +10,11 @@ class ErrorHandling(Extension):
         error_id = uuid.uuid4().hex.upper()[0:6]
         error_type = str(type(event.error).__name__)
         error_str = str(event.error.__str__())
+
+        if error_type == "CommandOnCooldown":
+            embed = Embed(description=error_str+'.', color=0xF23F42)
+            return await event.ctx.send(embed=embed, delete_after=5)
+
         tb_str = str(traceback.format_exception(event.error))
         if event.ctx:
             guild_name = event.ctx.guild.name
