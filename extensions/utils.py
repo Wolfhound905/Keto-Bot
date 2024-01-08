@@ -181,7 +181,7 @@ class Utilities(Extension):
         )
         embed.add_field(name="interactions.py Version", value=__version__, inline=True)
         embed.set_footer(
-            text="https://github.com/stekc/keto-bot", icon_url=self.bot.owner.avatar_url
+            text="https://github.com/stekc/Keto-Bot", icon_url=self.bot.owner.avatar_url
         )
         await ctx.respond(embed=embed)
 
