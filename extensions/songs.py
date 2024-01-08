@@ -7,6 +7,7 @@ from interactions import (
     AllowedMentions,
     Embed,
     ButtonStyle,
+    Permissions,
     ContextMenuContext,
     Message,
     context_menu,
@@ -107,7 +108,9 @@ class Songs(Extension):
                 allowed_mentions=AllowedMentions.none(),
             )
         await asyncio.sleep(0.1)
-        await event.message.suppress_embeds()
+        await event.message.suppress_embeds() if (
+            await event.message.guild.fetch_member(self.bot.user.id)
+        ).has_permission(Permissions.MANAGE_MESSAGES) else None
 
     @cached(ttl=604800)
     async def get_music(self, url):

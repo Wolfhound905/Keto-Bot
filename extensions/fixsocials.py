@@ -8,6 +8,7 @@ from interactions import (
     ButtonStyle,
     ContextMenuContext,
     Message,
+    Permissions,
     context_menu,
     listen,
     Extension,
@@ -105,7 +106,9 @@ class FixSocials(Extension):
                         quickvids_url, allowed_mentions=AllowedMentions.none()
                     )
                     await asyncio.sleep(0.1)
-                    await message.suppress_embeds()
+                    await message.suppress_embeds() if (
+                        await message.guild.fetch_member(self.bot.user.id)
+                    ).has_permission(Permissions.MANAGE_MESSAGES) else None
                     if vote_button and embed:
                         await message.channel.send(
                             components=vote_button, embed=embed, delete_after=20
@@ -136,7 +139,9 @@ class FixSocials(Extension):
                             allowed_mentions=AllowedMentions.none(),
                         )
                         await asyncio.sleep(0.1)
-                        await message.suppress_embeds()
+                        await message.suppress_embeds() if (
+                            await message.guild.fetch_member(self.bot.user.id)
+                        ).has_permission(Permissions.MANAGE_MESSAGES) else None
                         if vote_button and embed:
                             await message.channel.send(
                                 components=vote_button, embed=embed, delete_after=20
@@ -159,7 +164,9 @@ class FixSocials(Extension):
                     allowed_mentions=AllowedMentions.none(),
                 )
                 await asyncio.sleep(0.1)
-                await message.suppress_embeds()
+                await message.suppress_embeds() if (
+                    await message.guild.fetch_member(self.bot.user.id)
+                ).has_permission(Permissions.MANAGE_MESSAGES) else None
                 if vote_button and embed:
                     await message.channel.send(
                         components=vote_button, embed=embed, delete_after=20
@@ -182,7 +189,9 @@ class FixSocials(Extension):
                     allowed_mentions=AllowedMentions.none(),
                 )
                 await asyncio.sleep(0.1)
-                await message.suppress_embeds()
+                await message.suppress_embeds() if (
+                    await message.guild.fetch_member(self.bot.user.id)
+                ).has_permission(Permissions.MANAGE_MESSAGES) else None
                 if vote_button and embed:
                     await message.channel.send(
                         components=vote_button, embed=embed, delete_after=20
@@ -202,7 +211,9 @@ class FixSocials(Extension):
                     allowed_mentions=AllowedMentions.none(),
                 )
                 await asyncio.sleep(0.1)
-                await message.suppress_embeds()
+                await message.suppress_embeds() if (
+                    await message.guild.fetch_member(self.bot.user.id)
+                ).has_permission(Permissions.MANAGE_MESSAGES) else None
                 if vote_button and embed:
                     await message.channel.send(
                         components=vote_button, embed=embed, delete_after=20
