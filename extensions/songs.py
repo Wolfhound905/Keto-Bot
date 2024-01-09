@@ -29,7 +29,7 @@ class Songs(Extension):
     )
     fmbot_id = 356268235697553409
 
-    @cached(ttl=604800)
+    @cached(ttl=86400)
     async def process_song_link(self, link):
         try:
             title, artist, thumbnail, spotify, applemusic = await self.get_music(link)
@@ -117,7 +117,7 @@ class Songs(Extension):
             await event.message.guild.fetch_member(self.bot.user.id)
         ).has_permission(Permissions.MANAGE_MESSAGES) else None
 
-    @cached(ttl=604800)
+    @cached(ttl=86400)
     async def get_music(self, url):
         async with aiohttp.ClientSession() as session:
             async with session.get(

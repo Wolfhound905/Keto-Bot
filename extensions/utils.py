@@ -18,7 +18,6 @@ from utils.colorthief import get_color
 
 class Utilities(Extension):
     bot: AutoShardedClient
-    global start_time
     start_time = time.time()
     load_dotenv()
 
@@ -149,11 +148,6 @@ class Utilities(Extension):
     async def stats(self, ctx: SlashContext):
         ram = f"{psutil.virtual_memory().used >> 20} MB / {psutil.virtual_memory().total >> 20} MB"
         cpu = f"{psutil.cpu_percent(interval=1)}%"
-        uptime = (
-            f"{int(round((time.time() - start_time) / 86400))}d {int(round((time.time() - start_time) % 86400 / 3600))}h {int(round((time.time() - start_time) % 3600 / 60))}m"
-            if int(round((time.time() - start_time) / 86400)) > 0
-            else f"{int(round((time.time() - start_time) % 86400 / 3600))}h {int(round((time.time() - start_time) % 3600 / 60))}m"
-        )
         randstr = uuid.uuid4().hex.upper()[0:16]
         embed = Embed(title="Bot Stats")
         embed.color = await get_color(self.bot.user.avatar_url)
@@ -173,7 +167,7 @@ class Utilities(Extension):
         embed.add_field(name="RAM", value=ram, inline=True)
         embed.add_field(
             name="Bot Uptime",
-            value=uptime,
+            value=f"<t:{int(self.start_time)}:R>\n<t:{int(self.start_time)}:D>",
             inline=True,
         )
         embed.add_field(

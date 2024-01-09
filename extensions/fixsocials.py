@@ -219,7 +219,7 @@ class FixSocials(Extension):
                         components=vote_button, embed=embed, delete_after=20
                     )
 
-    @cached(ttl=604800)
+    @cached(ttl=86400)
     async def get_final_url(self, url):
         c = pycurl.Curl()
         c.setopt(c.URL, url)
@@ -230,7 +230,7 @@ class FixSocials(Extension):
         c.close()
         return redirect.partition("?")[0]
 
-    @cached(ttl=604800)
+    @cached(ttl=86400)
     async def extract_urls(self, text):
         tiktok_regex = r"(https:\/\/(www\.)?(vt|vm)\.tiktok\.com\/[A-Za-z0-9]+|https:\/\/(vx)?tiktok\.com\/@[\w.]+\/video\/[\d]+\/?|https:\/\/(vx)?tiktok\.com\/t\/[a-zA-Z0-9]+\/?)"
         instagram_regex = r"(https:\/\/(www.)?instagram\.com\/(?:p|reel)\/([^/?#&]+))"
@@ -248,7 +248,7 @@ class FixSocials(Extension):
 
         return tiktok_urls, instagram_urls, twitter_urls, reddit_urls
 
-    @cached(ttl=604800)
+    @cached(ttl=86400)
     async def quickvids(self, tiktok_url):
         try:
             headers = {
@@ -271,7 +271,7 @@ class FixSocials(Extension):
         except (aiohttp.ClientError, asyncio.TimeoutError):
             return None
 
-    @cached(ttl=604800)
+    @cached(ttl=86400)
     async def is_carousel(self, link: str):
         try:
             async with aiohttp.ClientSession() as session:
