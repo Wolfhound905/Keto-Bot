@@ -45,7 +45,7 @@ class FixSocials(Extension):
             and not reddit_urls
         ):
             await ctx.respond(
-                "No fixable links found. Use this command on TikTok, Instagram Reels, Twitter, and Reddit links.",
+                "No fixable links found. Use this command on TikTok, Instagram, Twitter, and Reddit links.",
                 ephemeral=True,
                 components=components,
             )
