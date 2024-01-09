@@ -33,6 +33,12 @@ async def topgg_vote_embed():
     components = [
         Button(
             style=ButtonStyle.URL,
+            label="Donate",
+            url="https://www.buymeacoffee.com/stkc",
+            emoji="❤️",
+        ),
+        Button(
+            style=ButtonStyle.URL,
             label="Vote on Top.gg",
             url=vote_url,
             emoji="⬆️",
@@ -43,15 +49,9 @@ async def topgg_vote_embed():
             url="https://github.com/stekc/Keto-Bot",
             emoji="⭐",
         ),
-        Button(
-            style=ButtonStyle.URL,
-            label="Join Support Server",
-            url="https://discord.gg/FVvaa9QZnm",
-            emoji="💬",
-        ),
     ]
     embed = Embed(
-        description=f"*Enjoying {bot_name}? Please vote, it helps the bot grow!*",
+        description=f"*Enjoying {bot_name}? Please support us with the links below!*",
         color=0xFF3366,
     )
 
