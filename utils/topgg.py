@@ -26,7 +26,7 @@ async def topgg_vote_embed():
     if not vote_url:
         components, embed = None, None
         return components, embed
-    if number >= 0.20:
+    if number >= 0.10:
         components, embed = None, None
         return components, embed
 

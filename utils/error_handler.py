@@ -50,9 +50,14 @@ class ErrorHandling(Extension):
             "color": 16711680,
         }
 
-        await self.send_error_webhook(embed, event, error_id)
+        await self.send_error_webhook(embed, event, error_id, length=len(tb_str))
 
-    async def send_error_webhook(self, embed, event=None, code=None):
+    async def send_error_webhook(self, embed, event=None, code=None, length=0):
+        if length > 4090:
+            return traceback.print_exception(
+                type(event.error), event.error, event.error.__traceback__
+            )
+
         payload = {"content": f"`{code}`" if code else None, "embeds": [embed]}
 
         async with aiohttp.ClientSession() as session:
