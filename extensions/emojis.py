@@ -32,7 +32,7 @@ class Emojis(Extension):
     async def jumbo(self, ctx: SlashContext, emoji: str):
         emoji = PartialEmoji.from_str(emoji)
 
-        if not emoji.id:
+        if not emoji:
             return await ctx.send("Invalid emoji.", ephemeral=True)
 
         await ctx.send(

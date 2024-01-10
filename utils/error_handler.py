@@ -1,5 +1,13 @@
 import traceback, uuid, aiohttp, json, os
-from interactions import listen, Extension, AutoShardedClient, events, Embed
+from interactions import (
+    listen,
+    Extension,
+    AutoShardedClient,
+    events,
+    Embed,
+    Button,
+    ButtonStyle,
+)
 
 
 class ErrorHandling(Extension):
@@ -42,7 +50,13 @@ class ErrorHandling(Extension):
                 color=0xF23F42,
             )
 
-            await event.ctx.send(embed=embed)
+            components = Button(
+                style=ButtonStyle.URL,
+                label="Join Support Server",
+                url="https://discord.gg/wsxncM7skr",
+            )
+
+            await event.ctx.send(embed=embed, components=components)
 
         embed = {
             "title": f"{'A command errored in ' + guild_name + ' (' + str(guild_id) + ') - ' + str(user_name) + ' (' + str(user_id) + ') - ' + os.getenv('PROJECT_NAME') if event and event.ctx else 'An error occurred - ' + os.getenv('PROJECT_NAME')}",
