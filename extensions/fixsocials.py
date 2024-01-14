@@ -31,6 +31,7 @@ class FixSocials(Extension):
             instagram_urls,
             twitter_urls,
             reddit_urls,
+            youtube_urls,
         ) = await self.extract_urls(message.content.replace("https://www.", "https://"))
         components = Button(
             style=ButtonStyle.URL,
@@ -43,6 +44,7 @@ class FixSocials(Extension):
             and not instagram_urls
             and not twitter_urls
             and not reddit_urls
+            and not youtube_urls
         ):
             await ctx.respond(
                 "No fixable links found. Use this command on TikTok, Instagram, Twitter, and Reddit links.",
@@ -57,7 +59,7 @@ class FixSocials(Extension):
             )
 
         await self.process_urls(
-            ctx, tiktok_urls, instagram_urls, twitter_urls, reddit_urls, components
+            ctx, tiktok_urls, instagram_urls, twitter_urls, reddit_urls, youtube_urls, components
         )
 
     @listen()
@@ -73,11 +75,12 @@ class FixSocials(Extension):
             instagram_urls,
             twitter_urls,
             reddit_urls,
+            youtube_urls,
         ) = await self.extract_urls(
             event.message.content.replace("https://www.", "https://")
         )
         await self.process_urls(
-            event.message, tiktok_urls, instagram_urls, twitter_urls, reddit_urls
+            event.message, tiktok_urls, instagram_urls, twitter_urls, reddit_urls, youtube_urls
         )
 
     async def process_urls(
@@ -87,6 +90,7 @@ class FixSocials(Extension):
         instagram_urls,
         twitter_urls,
         reddit_urls,
+        youtube_urls,
         components=None,
     ):
         vote_button, embed = await topgg_vote_embed()
@@ -219,6 +223,14 @@ class FixSocials(Extension):
                         components=vote_button, embed=embed, delete_after=20
                     )
 
+        for url in youtube_urls:
+            if isinstance(message, ContextMenuContext):
+                await message.respond(
+                    url[0].replace("https://youtube.com/watch?v=", "https://lillieh1000.gay/yt/?videoID=").replace("https://youtu.be/", "https://lillieh1000.gay/yt/?videoID=")+'#',
+                    components=components,
+                    allowed_mentions=AllowedMentions.none(),
+                )
+
     @cached(ttl=86400)
     async def get_final_url(self, url):
         c = pycurl.Curl()
@@ -238,6 +250,7 @@ class FixSocials(Extension):
             r"(https:\/\/(www.)?(twitter|x)\.com\/[a-zA-Z0-9_]+\/status\/[0-9]+)"
         )
         reddit_regex = r"(https?://(?:www\.)?(?:old\.)?reddit\.com/r/[A-Za-z0-9_]+/(?:comments|s)/[A-Za-z0-9_]+(?:/[^/ ]+)?(?:/\w+)?)|(https?://(?:www\.)?redd\.it/[A-Za-z0-9]+)"
+        youtube_regex = r"(https:\/\/(www\.)?(youtube\.com\/watch\?v=[A-Za-z0-9_]+|youtu\.be\/[A-Za-z0-9_]+))"
 
         tiktok_urls = re.findall(tiktok_regex, text)
         instagram_urls = re.findall(instagram_regex, text)
@@ -245,8 +258,9 @@ class FixSocials(Extension):
             twitter_regex, text.replace("https://x.com/", "https://twitter.com/")
         )
         reddit_urls = re.findall(reddit_regex, text)
+        youtube_urls = re.findall(youtube_regex, text)
 
-        return tiktok_urls, instagram_urls, twitter_urls, reddit_urls
+        return tiktok_urls, instagram_urls, twitter_urls, reddit_urls, youtube_urls
 
     @cached(ttl=86400)
     async def quickvids(self, tiktok_url):
