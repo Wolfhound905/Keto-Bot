@@ -33,10 +33,11 @@ class FixSocials(Extension):
             reddit_urls,
             youtube_urls,
         ) = await self.extract_urls(message.content.replace("https://www.", "https://"))
+        jump_url = message.jump_url
         components = Button(
             style=ButtonStyle.URL,
             label="Jump to Original Message",
-            url=message.jump_url,
+            url=jump_url,
         )
 
         if (
@@ -59,7 +60,14 @@ class FixSocials(Extension):
             )
 
         await self.process_urls(
-            ctx, tiktok_urls, instagram_urls, twitter_urls, reddit_urls, youtube_urls, components
+            ctx,
+            tiktok_urls,
+            instagram_urls,
+            twitter_urls,
+            reddit_urls,
+            youtube_urls,
+            jump_url,
+            components,
         )
 
     @listen()
@@ -80,7 +88,12 @@ class FixSocials(Extension):
             event.message.content.replace("https://www.", "https://")
         )
         await self.process_urls(
-            event.message, tiktok_urls, instagram_urls, twitter_urls, reddit_urls, youtube_urls
+            event.message,
+            tiktok_urls,
+            instagram_urls,
+            twitter_urls,
+            reddit_urls,
+            youtube_urls,
         )
 
     async def process_urls(
@@ -91,23 +104,67 @@ class FixSocials(Extension):
         twitter_urls,
         reddit_urls,
         youtube_urls,
+        jump_url=None,
         components=None,
     ):
         vote_button, embed = await topgg_vote_embed()
         for url in tiktok_urls:
-            quickvids_url = await self.quickvids(
+            (
+                quickvids_url,
+                likes,
+                comments,
+                views,
+                author,
+                author_link,
+            ) = await self.quickvids(
                 url[0].replace("https://vxtiktok.com/", "https://tiktok.com/")
             )
+            buttons = [
+                Button(
+                    style=ButtonStyle.RED,
+                    label=await self.format_number_str(likes),
+                    emoji="🤍",
+                    disabled=False,
+                ),
+                Button(
+                    style=ButtonStyle.BLUE,
+                    label=await self.format_number_str(comments),
+                    emoji="💬",
+                    disabled=False,
+                ),
+                Button(
+                    style=ButtonStyle.BLUE,
+                    label=await self.format_number_str(views),
+                    emoji="👀",
+                    disabled=False,
+                ),
+                Button(
+                    style=ButtonStyle.URL,
+                    label="@" + author,
+                    emoji="👤",
+                    url=author_link,
+                ),
+            ]
+            if isinstance(message, ContextMenuContext):
+                buttons.append(
+                    Button(
+                        style=ButtonStyle.URL,
+                        label="⤴️",
+                        url=jump_url,
+                    ),
+                )
             if quickvids_url and not await self.is_carousel(quickvids_url):
                 if isinstance(message, ContextMenuContext):
                     await message.respond(
                         quickvids_url,
-                        components=components,
+                        components=buttons,
                         allowed_mentions=AllowedMentions.none(),
                     )
                 else:
                     await message.reply(
-                        quickvids_url, allowed_mentions=AllowedMentions.none()
+                        quickvids_url,
+                        allowed_mentions=AllowedMentions.none(),
+                        components=buttons,
                     )
                     await asyncio.sleep(0.1)
                     await message.suppress_embeds() if (
@@ -132,17 +189,25 @@ class FixSocials(Extension):
                             url[0].replace(
                                 "https://tiktok.com/", "https://vxtiktok.com/"
                             ),
-                            components=components,
+                            components=buttons if quickvids_url else components,
                             allowed_mentions=AllowedMentions.none(),
                         )
                     else:
-                        await message.reply(
+                        msg = await message.reply(
                             url[0].replace(
                                 "https://tiktok.com/", "https://vxtiktok.com/"
                             ),
+                            components=buttons if quickvids_url else components,
                             allowed_mentions=AllowedMentions.none(),
                         )
-                        await asyncio.sleep(0.1)
+                        await asyncio.sleep(2)
+                        if msg.embeds and msg.embeds[0].description:
+                            if (
+                                "Failed to get video data from TikTok"
+                                in msg.embeds[0].description
+                            ):
+                                await msg.delete()
+                                continue
                         await message.suppress_embeds() if (
                             await message.guild.fetch_member(self.bot.user.id)
                         ).has_permission(Permissions.MANAGE_MESSAGES) else None
@@ -161,13 +226,17 @@ class FixSocials(Extension):
                     allowed_mentions=AllowedMentions.none(),
                 )
             else:
-                await message.reply(
+                msg = await message.reply(
                     url[0].replace(
                         "https://instagram.com/", "https://ddinstagram.com/"
                     ),
                     allowed_mentions=AllowedMentions.none(),
                 )
-                await asyncio.sleep(0.1)
+                await asyncio.sleep(2)
+                if msg.embeds and msg.embeds[0].description:
+                    if "Post not found" in msg.embeds[0].description:
+                        await msg.delete()
+                        continue
                 await message.suppress_embeds() if (
                     await message.guild.fetch_member(self.bot.user.id)
                 ).has_permission(Permissions.MANAGE_MESSAGES) else None
@@ -226,7 +295,15 @@ class FixSocials(Extension):
         for url in youtube_urls:
             if isinstance(message, ContextMenuContext):
                 await message.respond(
-                    url[0].replace("https://youtube.com/watch?v=", "https://lillieh1000.gay/yt/?videoID=").replace("https://youtu.be/", "https://lillieh1000.gay/yt/?videoID=")+'#',
+                    url[0]
+                    .replace(
+                        "https://youtube.com/watch?v=",
+                        "https://lillieh1000.gay/yt/?videoID=",
+                    )
+                    .replace(
+                        "https://youtu.be/", "https://lillieh1000.gay/yt/?videoID="
+                    )
+                    + "#",
                     components=components,
                     allowed_mentions=AllowedMentions.none(),
                 )
@@ -271,7 +348,7 @@ class FixSocials(Extension):
             }
             async with aiohttp.ClientSession(headers=headers) as session:
                 url = "https://api.quickvids.win/v1/shorturl/create"
-                data = {"input_text": tiktok_url}
+                data = {"input_text": tiktok_url, "detailed": True}
                 async with session.post(
                     url, json=data, timeout=aiohttp.ClientTimeout(total=5)
                 ) as response:
@@ -279,7 +356,19 @@ class FixSocials(Extension):
                         text = await response.text()
                         data = json.loads(text)
                         quickvids_url = data["quickvids_url"]
-                        return quickvids_url
+                        likes = data["details"]["video"]["counts"]["likes"]
+                        comments = data["details"]["video"]["counts"]["comments"]
+                        views = data["details"]["video"]["counts"]["views"]
+                        author = data["details"]["author"]["username"]
+                        author_link = data["details"]["author"]["link"]
+                        return (
+                            quickvids_url,
+                            likes,
+                            comments,
+                            views,
+                            author,
+                            author_link,
+                        )
                     else:
                         return None
         except (aiohttp.ClientError, asyncio.TimeoutError):
@@ -295,6 +384,16 @@ class FixSocials(Extension):
                         return ">Download All Images</button>" in text
         except (aiohttp.ClientError, asyncio.TimeoutError):
             return False
+
+    async def format_number_str(self, num):
+        if num >= 1000:
+            powers = ["", "k", "M", "B", "T"]
+            power = max(0, min(int((len(str(num)) - 1) / 3), len(powers) - 1))
+            scaled_num = round(num / (1000**power), 1)
+            formatted_num = f"{scaled_num:.1f}{powers[power]}"
+            return formatted_num
+        else:
+            return str(num)
 
 
 def setup(bot: AutoShardedClient):

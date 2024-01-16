@@ -80,7 +80,7 @@ class Songs(Extension):
             return
 
         embed, components = await self.process_song_link(link)
-        components.insert(0, jump_button_e if len(components) > 0 else jump_button)
+        components.append(jump_button_e if len(components) > 0 else jump_button)
         await ctx.respond(components=components, embed=embed)
 
     @listen()
