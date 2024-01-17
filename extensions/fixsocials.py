@@ -6,7 +6,10 @@ from interactions import (
     AllowedMentions,
     Button,
     ButtonStyle,
+    Embed,
     ContextMenuContext,
+    ComponentContext,
+    component_callback,
     Message,
     Permissions,
     context_menu,
@@ -17,10 +20,12 @@ from interactions import (
 )
 from interactions.api.events import MessageCreate
 from utils.topgg import topgg_vote_embed
+from utils.colorthief import get_color
 
 
 class FixSocials(Extension):
     bot: AutoShardedClient
+    tiktok_counts = {}
 
     @context_menu(name="Fix Social Embed", context_type=CommandType.MESSAGE)
     @cooldown(Buckets.USER, 1, 3)
@@ -96,6 +101,31 @@ class FixSocials(Extension):
             youtube_urls,
         )
 
+    @component_callback("tiktok_button")
+    async def c_tiktok_button(self, ctx: ComponentContext):
+        await self.description_embed(ctx)
+
+    @component_callback("tiktok_button_2")
+    async def c_tiktok_button_2(self, ctx: ComponentContext):
+        await self.description_embed(ctx)
+
+    @component_callback("tiktok_button_3")
+    async def c_tiktok_button_3(self, ctx: ComponentContext):
+        await self.description_embed(ctx)
+
+    @cached(ttl=86400)
+    async def description_embed(self, ctx: ComponentContext):
+        message = ctx.message.content
+        if not message.startswith('https://quickvids.win/'):
+            message = await self.quickvids(ctx.message.content.replace('https://vxtiktok.com/', 'https://tiktok.com/'))
+            message = message[0]
+        description = self.tiktok_counts.get(message)['description']
+        author = self.tiktok_counts.get(message)['author']
+        avatar = self.tiktok_counts.get(message)['avatar']
+        embed = Embed(description=description, color=await get_color(avatar))
+        embed.set_author(name="@"+author, icon_url=avatar)
+        await ctx.send(embed=embed, ephemeral=True)
+
     async def process_urls(
         self,
         message,
@@ -114,28 +144,41 @@ class FixSocials(Extension):
                 likes,
                 comments,
                 views,
+                description,
                 author,
+                author_avatar,
                 author_link,
             ) = await self.quickvids(
                 url[0].replace("https://vxtiktok.com/", "https://tiktok.com/")
             )
+            self.tiktok_counts[quickvids_url] = {
+                'likes': likes,
+                'comments': comments,
+                'views': views,
+                'description': description,
+                'author': author,
+                'avatar': author_avatar
+            }
             buttons = [
                 Button(
                     style=ButtonStyle.RED,
                     label=await self.format_number_str(likes),
                     emoji="🤍",
+                    custom_id="tiktok_button",
                     disabled=False,
                 ),
                 Button(
                     style=ButtonStyle.BLUE,
                     label=await self.format_number_str(comments),
                     emoji="💬",
+                    custom_id="tiktok_button_2",
                     disabled=False,
                 ),
                 Button(
                     style=ButtonStyle.BLUE,
                     label=await self.format_number_str(views),
                     emoji="👀",
+                    custom_id="tiktok_button_3",
                     disabled=False,
                 ),
                 Button(
@@ -175,6 +218,8 @@ class FixSocials(Extension):
                             components=vote_button, embed=embed, delete_after=20
                         )
             else:
+                if url[0].startswith("https://vxtiktok.com/"):
+                        continue
                 url_list = list(url)
                 url_list[0] = await self.get_final_url(url_list[0])
                 url_list[0] = url_list[0].replace(
@@ -359,14 +404,18 @@ class FixSocials(Extension):
                         likes = data["details"]["video"]["counts"]["likes"]
                         comments = data["details"]["video"]["counts"]["comments"]
                         views = data["details"]["video"]["counts"]["views"]
+                        description = data["details"]["video"]["raw_description"][:2000]
                         author = data["details"]["author"]["username"]
+                        author_avatar = data["details"]["author"]["avatar"]
                         author_link = data["details"]["author"]["link"]
                         return (
                             quickvids_url,
                             likes,
                             comments,
                             views,
+                            description,
                             author,
+                            author_avatar,
                             author_link,
                         )
                     else:
