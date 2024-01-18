@@ -4,7 +4,7 @@ A Discord bot written in Python with the [interactions.py](https://github.com/in
 
 Features:
 
-* Fix social media embeds using [quickvids.win](https://quickvids.win), [ddinstagram.com](https://ddinstagram.com), [fxtwitter.com](https://fxtwitter.com), [vxtiktok.com](https://vxtiktok.com) and [rxddit.com](https://rxddit.com)
+* Fix social media embeds for TikTok, Instagram, Twitter, Reddit and YouTube
 
 * Currency conversion using [FreecurrencyAPI](https://freecurrencyapi.com)
 
@@ -13,6 +13,13 @@ Features:
 * Basic moderation commands
 
 * Other common Discord bot features like `/userinfo`, `/avatar`, `/jumbo`, etc.
+
+
+\* *Services used:
+[quickvids.win](https://quickvids.win), [vxtiktok.com](https://vxtiktok.com), [ddinstagram.com](https://ddinstagram.com), [fxtwitter.com](https://fxtwitter.com), [rxddit.com](https://rxddit.com), [lillieh1000.gay/yt](https://lillieh1000.gay)*
+
+
+\* *YouTube links are not fixed automatically, use the "Fix Social Embed" command in the Apps menu*
 
 Setup:
 
