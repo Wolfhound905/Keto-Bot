@@ -16,6 +16,8 @@ Features:
 
 Setup:
 
+⚠️ Keto is tested on macOS and Linux. Windows support is not guaranteed.
+
 1. `git clone https://github.com/stekc/keto-bot`
 
 2. Rename .env.example to .env and fill out the required fields.
