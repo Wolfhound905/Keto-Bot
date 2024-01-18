@@ -4,7 +4,7 @@ A Discord bot written in Python with the [interactions.py](https://github.com/in
 
 Features:
 
-* Fix social media embeds using [quickvids.win](https://quickvids.win), [ddinstagram.com](https://ddinstagram.com), [vxtwitter.com](https://vxtwitter.com), [vxtiktok.com](https://vxtiktok.com) and [rxddit.com](https://rxddit.com)
+* Fix social media embeds using [quickvids.win](https://quickvids.win), [ddinstagram.com](https://ddinstagram.com), [fxtwitter.com](https://fxtwitter.com), [vxtiktok.com](https://vxtiktok.com) and [rxddit.com](https://rxddit.com)
 
 * Currency conversion using [FreecurrencyAPI](https://freecurrencyapi.com)
 

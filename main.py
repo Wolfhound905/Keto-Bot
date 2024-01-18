@@ -1,7 +1,8 @@
 import os
 from utils.topgg import update_topgg_count
+from utils.status import status_refresh_interval
 from dotenv import load_dotenv
-from interactions import Intents, AutoShardedClient, listen
+from interactions import Intents, AutoShardedClient, listen, Activity, ActivityType
 from interactions.ext.debug_extension import DebugExtension
 from core.init_logging import init_logging
 from core.extensions_loader import load_extensions
@@ -12,10 +13,21 @@ if __name__ == "__main__":
 
     logger = init_logging()
 
+    if os.getenv("CUSTOM_ACTIVITY") == "true":
+        activity = Activity.create(
+            name=os.getenv("ACTIVITY_MESSAGE"),
+            type=ActivityType[os.getenv("ACTIVITY_TYPE").upper()],
+        )
+    else:
+        activity = Activity.create(
+            name="Keto is starting...",
+            type=ActivityType.WATCHING,
+        )
+
     bot = AutoShardedClient(
         intents=Intents.MESSAGES | Intents.MESSAGE_CONTENT | Intents.GUILDS,
         auto_defer=True,
-        activity="https://stkc.win/",
+        activity=activity,
         logger=logger,
         delete_unused_application_cmds=True,
         fetch_members=False,
@@ -35,5 +47,14 @@ if __name__ == "__main__":
     @listen()
     async def on_startup(self):
         update_topgg_count.start(self)
+        status_refresh_interval.start(self)
+        if os.getenv("CUSTOM_ACTIVITY") == "false":
+            guild_count = len(self.bot.guilds)
+            activity = Activity.create(
+                name=str(guild_count) + " servers" if guild_count > 1 else "1 server",
+                type=ActivityType.WATCHING,
+            )
+
+            await self.bot.change_presence(activity=activity)
 
     bot.start(os.getenv("DISCORD_TOKEN"))

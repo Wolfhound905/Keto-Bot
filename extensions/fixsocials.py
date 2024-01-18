@@ -116,14 +116,18 @@ class FixSocials(Extension):
     @cached(ttl=86400)
     async def description_embed(self, ctx: ComponentContext):
         message = ctx.message.content
-        if not message.startswith('https://quickvids.win/'):
-            message = await self.quickvids(ctx.message.content.replace('https://vxtiktok.com/', 'https://tiktok.com/'))
+        if not message.startswith("https://quickvids.win/"):
+            message = await self.quickvids(
+                ctx.message.content.replace(
+                    "https://vxtiktok.com/", "https://tiktok.com/"
+                )
+            )
             message = message[0]
-        description = self.tiktok_counts.get(message)['description']
-        author = self.tiktok_counts.get(message)['author']
-        avatar = self.tiktok_counts.get(message)['avatar']
+        description = self.tiktok_counts.get(message)["description"]
+        author = self.tiktok_counts.get(message)["author"]
+        avatar = self.tiktok_counts.get(message)["avatar"]
         embed = Embed(description=description, color=await get_color(avatar))
-        embed.set_author(name="@"+author, icon_url=avatar)
+        embed.set_author(name="@" + author, icon_url=avatar)
         await ctx.send(embed=embed, ephemeral=True)
 
     async def process_urls(
@@ -152,12 +156,12 @@ class FixSocials(Extension):
                 url[0].replace("https://vxtiktok.com/", "https://tiktok.com/")
             )
             self.tiktok_counts[quickvids_url] = {
-                'likes': likes,
-                'comments': comments,
-                'views': views,
-                'description': description,
-                'author': author,
-                'avatar': author_avatar
+                "likes": likes,
+                "comments": comments,
+                "views": views,
+                "description": description,
+                "author": author,
+                "avatar": author_avatar,
             }
             buttons = [
                 Button(
@@ -219,7 +223,7 @@ class FixSocials(Extension):
                         )
             else:
                 if url[0].startswith("https://vxtiktok.com/"):
-                        continue
+                    continue
                 url_list = list(url)
                 url_list[0] = await self.get_final_url(url_list[0])
                 url_list[0] = url_list[0].replace(
@@ -318,13 +322,13 @@ class FixSocials(Extension):
         for url in twitter_urls:
             if isinstance(message, ContextMenuContext):
                 await message.respond(
-                    url[0].replace("https://twitter.com/", "https://vxtwitter.com/"),
+                    url[0].replace("https://twitter.com/", "https://fxtwitter.com/"),
                     components=components,
                     allowed_mentions=AllowedMentions.none(),
                 )
             else:
                 await message.reply(
-                    url[0].replace("https://twitter.com/", "https://vxtwitter.com/"),
+                    url[0].replace("https://twitter.com/", "https://fxtwitter.com/"),
                     components=components,
                     allowed_mentions=AllowedMentions.none(),
                 )
