@@ -1,5 +1,5 @@
 import os
-from interactions import Task, IntervalTrigger, Activity, ActivityType
+from interactions import Task, IntervalTrigger, Activity, ActivityType, Status
 
 
 async def status_refresh(self):
@@ -10,7 +10,18 @@ async def status_refresh(self):
             type=ActivityType.WATCHING,
         )
 
-        await self.bot.change_presence(activity=activity)
+        await self.bot.change_presence(
+            activity=activity,
+            status=Status.IDLE
+            if os.getenv("STATUS") == "idle"
+            else Status.DND
+            if os.getenv("STATUS") == "dnd"
+            else Status.INVISIBLE
+            if os.getenv("STATUS") == "invisible"
+            else Status.OFFLINE
+            if os.getenv("STATUS") == "offline"
+            else Status.ONLINE,
+        )
 
 
 @Task.create(IntervalTrigger(minutes=5))
