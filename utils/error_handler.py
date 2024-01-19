@@ -61,7 +61,7 @@ class ErrorHandling(Extension):
         embed = {
             "title": f"{'A command errored in ' + guild_name + ' (' + str(guild_id) + ') - ' + str(user_name) + ' (' + str(user_id) + ') - ' + os.getenv('PROJECT_NAME') if event and event.ctx else 'An error occurred - ' + os.getenv('PROJECT_NAME')}",
             "description": f"```{tb_str[:4090]}```",
-            "color": 16711680,
+            "color": 16776960 if event and event.ctx else 16711680,
         }
 
         await self.send_error_webhook(embed, event, error_id, length=len(tb_str))

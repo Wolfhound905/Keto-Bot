@@ -27,6 +27,28 @@ class FixSocials(Extension):
     bot: AutoShardedClient
     tiktok_counts = {}
 
+    @context_menu(name="Delete Fixed Embed", context_type=CommandType.MESSAGE)
+    @cooldown(Buckets.USER, 1, 3)
+    async def delete_ctxmenu(self, ctx: ContextMenuContext):
+        message: Message = ctx.target
+        referenced_message = await message.fetch_referenced_message(force=True)
+
+        if not referenced_message:
+            return await ctx.respond(
+                "Use this command on a fixed embed.", ephemeral=True
+            )
+        if message.author.id != self.bot.user.id:
+            return await ctx.respond(
+                "Use this command on a fixed embed.", ephemeral=True
+            )
+        if referenced_message.author.id != ctx.author.id:
+            return await ctx.respond(
+                "You can only delete replies to your messages.", ephemeral=True
+            )
+
+        await message.delete()
+        await ctx.respond("Deleted fixed embed.", ephemeral=True)
+
     @context_menu(name="Fix Social Embed", context_type=CommandType.MESSAGE)
     @cooldown(Buckets.USER, 1, 3)
     async def quickvids_ctxmenu(self, ctx: ContextMenuContext):
@@ -126,7 +148,8 @@ class FixSocials(Extension):
         description = self.tiktok_counts.get(message)["description"]
         author = self.tiktok_counts.get(message)["author"]
         avatar = self.tiktok_counts.get(message)["avatar"]
-        embed = Embed(description=description, color=await get_color(avatar))
+        video_id = self.tiktok_counts.get(message)["video_id"]
+        embed = Embed(description=description, color=await get_color(avatar), timestamp=int(video_id) >> 32)
         embed.set_author(name="@" + author, icon_url=avatar)
         await ctx.send(embed=embed, ephemeral=True)
 
@@ -149,6 +172,7 @@ class FixSocials(Extension):
                 comments,
                 views,
                 description,
+                video_id,
                 author,
                 author_avatar,
                 author_link,
@@ -160,6 +184,7 @@ class FixSocials(Extension):
                 "comments": comments,
                 "views": views,
                 "description": description,
+                "video_id": video_id,
                 "author": author,
                 "avatar": author_avatar,
             }
@@ -371,7 +396,9 @@ class FixSocials(Extension):
     @cached(ttl=86400)
     async def extract_urls(self, text):
         tiktok_regex = r"(https:\/\/(www\.)?(vt|vm)\.tiktok\.com\/[A-Za-z0-9]+|https:\/\/(vx)?tiktok\.com\/@[\w.]+\/video\/[\d]+\/?|https:\/\/(vx)?tiktok\.com\/t\/[a-zA-Z0-9]+\/?)"
-        instagram_regex = r"(https:\/\/(www.)?instagram\.com\/(?:p|reel)\/([^/?#&]+))"
+        instagram_regex = (
+            r"(https:\/\/(www.)?instagram\.com\/(?:p|reel|reels)\/([^/?#&]+))"
+        )
         twitter_regex = (
             r"(https:\/\/(www.)?(twitter|x)\.com\/[a-zA-Z0-9_]+\/status\/[0-9]+)"
         )
@@ -409,6 +436,7 @@ class FixSocials(Extension):
                         comments = data["details"]["video"]["counts"]["comments"]
                         views = data["details"]["video"]["counts"]["views"]
                         description = data["details"]["video"]["raw_description"][:2000]
+                        video_id = data["details"]["video"]["id"]
                         author = data["details"]["author"]["username"]
                         author_avatar = data["details"]["author"]["avatar"]
                         author_link = data["details"]["author"]["link"]
@@ -418,12 +446,15 @@ class FixSocials(Extension):
                             comments,
                             views,
                             description,
+                            video_id,
                             author,
                             author_avatar,
                             author_link,
                         )
                     else:
-                        return None
+                        raise Exception(
+                            "QuickVids returned status " + str(response.status)
+                        )
         except (aiohttp.ClientError, asyncio.TimeoutError):
             return None
 
