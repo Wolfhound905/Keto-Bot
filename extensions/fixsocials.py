@@ -403,10 +403,10 @@ class FixSocials(Extension):
                     url[0]
                     .replace(
                         "https://youtube.com/watch?v=",
-                        "https://lillieh1000.gay/yt/?videoID=",
+                        "https://yt.lillieh1000.gay/?videoID=",
                     )
                     .replace(
-                        "https://youtu.be/", "https://lillieh1000.gay/yt/?videoID="
+                        "https://youtu.be/", "https://yt.lillieh1000.gay/?videoID="
                     )
                     + "#",
                     components=components,
