@@ -1,4 +1,4 @@
-import re, aiohttp, json, asyncio, pycurl
+import re, aiohttp, json, asyncio
 from aiocache import cached
 from interactions import (
     CommandType,
@@ -410,14 +410,29 @@ class FixSocials(Extension):
 
     @cached(ttl=86400)
     async def get_final_url(self, url):
-        c = pycurl.Curl()
-        c.setopt(c.URL, url)
-        c.setopt(c.FOLLOWLOCATION, True)
-        c.setopt(pycurl.WRITEFUNCTION, lambda bytes: len(bytes))
-        c.perform()
-        redirect = c.getinfo(c.EFFECTIVE_URL)
-        c.close()
-        return redirect.partition("?")[0]
+        user_agent = "Wheregoes.com Redirect Checker/1.0"  # A common service used to check redirects
+        async with aiohttp.ClientSession() as session:
+            max_redirects = 10  # NOTE: Failsafe, tiktok only has 2 at most
+            while max_redirects > 0:
+                async with session.head(
+                    url,
+                    allow_redirects=False,
+                    timeout=3,
+                    headers={"User-Agent": user_agent},
+                ) as response:
+                    max_redirects -= 1
+                    match response.status:
+                        case 200:
+                            return str(response.url).split("?")[0]
+                        case 404:
+                            raise Exception("404")
+                        case _:
+                            url = response.headers.get("location", None)
+                            if (
+                                url is None
+                            ):  # NOTE: If there is no location header, return the current url
+                                return str(response.url).split("?")[0]
+                            continue
 
     @cached(ttl=86400)
     async def extract_urls(self, text):
