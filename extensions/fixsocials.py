@@ -25,7 +25,6 @@ from utils.colorthief import get_color
 
 class FixSocials(Extension):
     bot: AutoShardedClient
-    tiktok_counts = {}
 
     @context_menu(name="Delete Fixed Embed", context_type=CommandType.MESSAGE)
     @cooldown(Buckets.USER, 1, 3)
@@ -157,32 +156,36 @@ class FixSocials(Extension):
             url=jump_url,
         )
 
-        message = ctx.message.content
-        if not message.startswith("https://quickvids.win/"):
-            message = await self.quickvids(
-                ctx.message.content.replace(
-                    "https://vxtiktok.com/", "https://tiktok.com/"
-                )
-            )
-            message = message[0]
-        try:
-            description = self.tiktok_counts.get(message)["description"]
-            author = self.tiktok_counts.get(message)["author"]
-            avatar = self.tiktok_counts.get(message)["avatar"]
-            video_id = self.tiktok_counts.get(message)["video_id"]
-            embed = Embed(
-                description=description,
-                color=await get_color(avatar),
-                timestamp=int(video_id) >> 32,
-            )
-            embed.set_author(name="@" + author, icon_url=avatar)
-            await ctx.send(embed=embed, ephemeral=True)
-        except TypeError:
-            await ctx.send(
-                'Data unavailable. Repost the link or use the "Fix Social Embed" context menu application to see data.',
+        referenced_message = await ctx.message.fetch_referenced_message(force=True)
+        if not referenced_message:
+            return await ctx.respond(
+                "The original message was deleted or cannot be retrieved. Extended details are unavailable.",
                 components=components,
                 ephemeral=True,
             )
+        (
+            quickvids_url,
+            likes,
+            comments,
+            views,
+            description,
+            video_id,
+            author,
+            author_avatar,
+            author_link,
+        ) = await self.quickvids(
+            referenced_message.content.replace(
+                "https://vxtiktok.com/", "https://tiktok.com/"
+            )
+        )
+
+        embed = Embed(
+            description=description,
+            color=await get_color(author_avatar),
+            timestamp=int(video_id) >> 32,
+        )
+        embed.set_author(name="@" + author, icon_url=author_avatar)
+        await ctx.send(embed=embed, ephemeral=True)
 
     async def process_urls(
         self,
@@ -210,15 +213,6 @@ class FixSocials(Extension):
             ) = await self.quickvids(
                 url[0].replace("https://vxtiktok.com/", "https://tiktok.com/")
             )
-            self.tiktok_counts[quickvids_url] = {
-                "likes": likes,
-                "comments": comments,
-                "views": views,
-                "description": description,
-                "video_id": video_id,
-                "author": author,
-                "avatar": author_avatar,
-            }
             buttons = [
                 Button(
                     style=ButtonStyle.RED,
@@ -249,10 +243,11 @@ class FixSocials(Extension):
                 ),
             ]
             if isinstance(message, ContextMenuContext):
+                buttons.clear()
                 buttons.append(
                     Button(
                         style=ButtonStyle.URL,
-                        label="⤴️",
+                        label="Jump to Original Message",
                         url=jump_url,
                     ),
                 )
