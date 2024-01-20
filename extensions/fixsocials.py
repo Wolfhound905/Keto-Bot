@@ -33,17 +33,30 @@ class FixSocials(Extension):
         message: Message = ctx.target
         referenced_message = await message.fetch_referenced_message(force=True)
 
+        jump_url = message.jump_url
+        components = Button(
+            style=ButtonStyle.URL,
+            label="Jump to Original Message",
+            url=jump_url,
+        )
+
         if not referenced_message:
             return await ctx.respond(
-                "Use this command on a fixed embed.", ephemeral=True
+                "Use this command on a fixed embed.",
+                components=components,
+                ephemeral=True,
             )
         if message.author.id != self.bot.user.id:
             return await ctx.respond(
-                "Use this command on a fixed embed.", ephemeral=True
+                "Use this command on a fixed embed.",
+                components=components,
+                ephemeral=True,
             )
         if referenced_message.author.id != ctx.author.id:
             return await ctx.respond(
-                "You can only delete replies to your messages.", ephemeral=True
+                "You can only delete replies to your messages.",
+                components=components,
+                ephemeral=True,
             )
 
         await message.delete()
@@ -137,6 +150,13 @@ class FixSocials(Extension):
 
     @cached(ttl=86400)
     async def description_embed(self, ctx: ComponentContext):
+        jump_url = ctx.message.jump_url
+        components = Button(
+            style=ButtonStyle.URL,
+            label="Jump to Original Message",
+            url=jump_url,
+        )
+
         message = ctx.message.content
         if not message.startswith("https://quickvids.win/"):
             message = await self.quickvids(
@@ -145,13 +165,24 @@ class FixSocials(Extension):
                 )
             )
             message = message[0]
-        description = self.tiktok_counts.get(message)["description"]
-        author = self.tiktok_counts.get(message)["author"]
-        avatar = self.tiktok_counts.get(message)["avatar"]
-        video_id = self.tiktok_counts.get(message)["video_id"]
-        embed = Embed(description=description, color=await get_color(avatar), timestamp=int(video_id) >> 32)
-        embed.set_author(name="@" + author, icon_url=avatar)
-        await ctx.send(embed=embed, ephemeral=True)
+        try:
+            description = self.tiktok_counts.get(message)["description"]
+            author = self.tiktok_counts.get(message)["author"]
+            avatar = self.tiktok_counts.get(message)["avatar"]
+            video_id = self.tiktok_counts.get(message)["video_id"]
+            embed = Embed(
+                description=description,
+                color=await get_color(avatar),
+                timestamp=int(video_id) >> 32,
+            )
+            embed.set_author(name="@" + author, icon_url=avatar)
+            await ctx.send(embed=embed, ephemeral=True)
+        except TypeError:
+            await ctx.send(
+                'Data unavailable. Repost the link or use the "Fix Social Embed" context menu application to see data.',
+                components=components,
+                ephemeral=True,
+            )
 
     async def process_urls(
         self,
