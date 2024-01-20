@@ -16,7 +16,7 @@ Features:
 
 
 \* *Services used:
-[quickvids.win](https://quickvids.win), [vxtiktok.com](https://vxtiktok.com), [ddinstagram.com](https://ddinstagram.com), [fxtwitter.com](https://fxtwitter.com), [rxddit.com](https://rxddit.com), [lillieh1000.gay/yt](https://lillieh1000.gay)*
+[quickvids.win](https://quickvids.win), [vxtiktok.com](https://vxtiktok.com), [ddinstagram.com](https://ddinstagram.com), [fxtwitter.com](https://fxtwitter.com), [rxddit.com](https://rxddit.com), [yt.lillieh1000.gay](https://yt.lillieh1000.gay)*
 
 
 \* *YouTube links are not fixed automatically, use the "Fix Social Embed" command in the Apps menu*
