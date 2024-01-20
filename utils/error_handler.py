@@ -15,14 +15,9 @@ class ErrorHandling(Extension):
 
     @listen(disable_default_listeners=True)
     async def on_error(self, event: events.Error):
-        if (
-            not os.getenv("ERROR_WEBHOOK_URL")
-            or not os.getenv("ERROR_WEBHOOK_URL").startswith(
-                "https://discord.com/api/webhooks/"
-            )
-            or os.getenv("ERROR_WEBHOOK_URL")
-            == "https://discord.com/api/webhooks/123/abc123"
-        ):
+        if not os.getenv("ERROR_WEBHOOK_URL") or not os.getenv(
+            "ERROR_WEBHOOK_URL"
+        ).startswith("https://discord.com/api/webhooks/"):
             return traceback.print_exception(
                 type(event.error), event.error, event.error.__traceback__
             )
