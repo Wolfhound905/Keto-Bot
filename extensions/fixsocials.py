@@ -109,6 +109,38 @@ class FixSocials(Extension):
             components,
         )
 
+    async def format_buttons(self, likes, comments, views, author, author_link):
+        buttons = [
+            Button(
+                style=ButtonStyle.RED,
+                label=await self.format_number_str(likes),
+                emoji="🤍",
+                custom_id="tiktok_button",
+                disabled=False,
+            ),
+            Button(
+                style=ButtonStyle.BLUE,
+                label=await self.format_number_str(comments),
+                emoji="💬",
+                custom_id="tiktok_button_2",
+                disabled=False,
+            ),
+            Button(
+                style=ButtonStyle.BLUE,
+                label=await self.format_number_str(views),
+                emoji="👀",
+                custom_id="tiktok_button_3",
+                disabled=False,
+            ),
+            Button(
+                style=ButtonStyle.URL,
+                label="@" + author,
+                emoji="👤",
+                url=author_link,
+            ),
+        ]
+        return buttons
+
     @listen()
     async def on_message_create(self, event: MessageCreate):
         if (
@@ -147,7 +179,6 @@ class FixSocials(Extension):
     async def c_tiktok_button_3(self, ctx: ComponentContext):
         await self.description_embed(ctx)
 
-    @cached(ttl=86400)
     async def description_embed(self, ctx: ComponentContext):
         jump_url = ctx.message.jump_url
         components = Button(
@@ -178,6 +209,10 @@ class FixSocials(Extension):
                 "https://vxtiktok.com/", "https://tiktok.com/"
             )
         )
+
+        buttons = await self.format_buttons(likes, comments, views, author, author_link)
+
+        await ctx.message.edit(components=buttons)
 
         embed = Embed(
             description=description,
@@ -213,35 +248,9 @@ class FixSocials(Extension):
             ) = await self.quickvids(
                 url[0].replace("https://vxtiktok.com/", "https://tiktok.com/")
             )
-            buttons = [
-                Button(
-                    style=ButtonStyle.RED,
-                    label=await self.format_number_str(likes),
-                    emoji="🤍",
-                    custom_id="tiktok_button",
-                    disabled=False,
-                ),
-                Button(
-                    style=ButtonStyle.BLUE,
-                    label=await self.format_number_str(comments),
-                    emoji="💬",
-                    custom_id="tiktok_button_2",
-                    disabled=False,
-                ),
-                Button(
-                    style=ButtonStyle.BLUE,
-                    label=await self.format_number_str(views),
-                    emoji="👀",
-                    custom_id="tiktok_button_3",
-                    disabled=False,
-                ),
-                Button(
-                    style=ButtonStyle.URL,
-                    label="@" + author,
-                    emoji="👤",
-                    url=author_link,
-                ),
-            ]
+            buttons = await self.format_buttons(
+                likes, comments, views, author, author_link
+            )
             if isinstance(message, ContextMenuContext):
                 buttons.clear()
                 buttons.append(
@@ -456,7 +465,6 @@ class FixSocials(Extension):
 
         return tiktok_urls, instagram_urls, twitter_urls, reddit_urls, youtube_urls
 
-    @cached(ttl=86400)
     async def quickvids(self, tiktok_url):
         try:
             headers = {
