@@ -1,5 +1,6 @@
 import re, aiohttp, json, asyncio
-from aiocache import cached
+from asyncache import cached
+from cachetools import TTLCache, LFUCache
 from interactions import (
     CommandType,
     AutoShardedClient,
@@ -179,6 +180,7 @@ class FixSocials(Extension):
     async def c_tiktok_button_3(self, ctx: ComponentContext):
         await self.description_embed(ctx)
 
+    @cached(TTLCache(maxsize=1000, ttl=60))
     async def description_embed(self, ctx: ComponentContext):
         jump_url = ctx.message.jump_url
         components = Button(
@@ -417,7 +419,7 @@ class FixSocials(Extension):
                     allowed_mentions=AllowedMentions.none(),
                 )
 
-    @cached(ttl=86400)
+    @cached(LFUCache(maxsize=1000))
     async def get_final_url(self, url):
         user_agent = "Wheregoes.com Redirect Checker/1.0"  # A common service used to check redirects
         async with aiohttp.ClientSession() as session:
@@ -443,7 +445,7 @@ class FixSocials(Extension):
                                 return str(response.url).split("?")[0]
                             continue
 
-    @cached(ttl=86400)
+    @cached(LFUCache(maxsize=1000))
     async def extract_urls(self, text):
         tiktok_regex = r"(https:\/\/(www\.)?(vt|vm)\.tiktok\.com\/[A-Za-z0-9]+|https:\/\/(vx)?tiktok\.com\/@[\w.]+\/video\/[\d]+\/?|https:\/\/(vx)?tiktok\.com\/t\/[a-zA-Z0-9]+\/?)"
         instagram_regex = (
@@ -465,6 +467,7 @@ class FixSocials(Extension):
 
         return tiktok_urls, instagram_urls, twitter_urls, reddit_urls, youtube_urls
 
+    @cached(TTLCache(maxsize=1000, ttl=60))
     async def quickvids(self, tiktok_url):
         try:
             headers = {
@@ -507,7 +510,7 @@ class FixSocials(Extension):
         except (aiohttp.ClientError, asyncio.TimeoutError):
             return None
 
-    @cached(ttl=86400)
+    @cached(LFUCache(maxsize=1000))
     async def is_carousel(self, link: str):
         try:
             async with aiohttp.ClientSession() as session:
@@ -518,6 +521,7 @@ class FixSocials(Extension):
         except (aiohttp.ClientError, asyncio.TimeoutError):
             return False
 
+    @cached(LFUCache(maxsize=1000))
     async def format_number_str(self, num):
         if num >= 1000:
             powers = ["", "k", "M", "B", "T"]
