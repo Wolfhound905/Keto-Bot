@@ -226,7 +226,7 @@ class FixSocials(Extension):
             embed=embed,
             components=components
             if ctx.message.created_at.timestamp()
-            < (await ctx.channel.history(limit=10).flatten())[0].created_at.timestamp()
+            < (await ctx.channel.history(limit=5).flatten())[4].created_at.timestamp()
             else None,
             ephemeral=True,
         )
