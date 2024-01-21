@@ -1,6 +1,6 @@
 import re, aiohttp, json, asyncio
 from asyncache import cached
-from cachetools import TTLCache, LFUCache
+from cachetools import TTLCache, LRUCache
 from interactions import (
     CommandType,
     AutoShardedClient,
@@ -222,7 +222,7 @@ class FixSocials(Extension):
             timestamp=int(video_id) >> 32,
         )
         embed.set_author(name="@" + author, icon_url=author_avatar)
-        await ctx.send(embed=embed, ephemeral=True)
+        await ctx.send(embed=embed, components=components if ctx.message.created_at.timestamp() < (await ctx.channel.history(limit=10).flatten())[0].created_at.timestamp() else None, ephemeral=True)
 
     async def process_urls(
         self,
@@ -419,7 +419,7 @@ class FixSocials(Extension):
                     allowed_mentions=AllowedMentions.none(),
                 )
 
-    @cached(LFUCache(maxsize=1000))
+    @cached(LRUCache(maxsize=1000))
     async def get_final_url(self, url):
         user_agent = "Wheregoes.com Redirect Checker/1.0"  # A common service used to check redirects
         async with aiohttp.ClientSession() as session:
@@ -445,7 +445,7 @@ class FixSocials(Extension):
                                 return str(response.url).split("?")[0]
                             continue
 
-    @cached(LFUCache(maxsize=1000))
+    @cached(LRUCache(maxsize=1000))
     async def extract_urls(self, text):
         tiktok_regex = r"(https:\/\/(www\.)?(vt|vm)\.tiktok\.com\/[A-Za-z0-9]+|https:\/\/(vx)?tiktok\.com\/@[\w.]+\/video\/[\d]+\/?|https:\/\/(vx)?tiktok\.com\/t\/[a-zA-Z0-9]+\/?)"
         instagram_regex = (
@@ -510,7 +510,7 @@ class FixSocials(Extension):
         except (aiohttp.ClientError, asyncio.TimeoutError):
             return None
 
-    @cached(LFUCache(maxsize=1000))
+    @cached(LRUCache(maxsize=1000))
     async def is_carousel(self, link: str):
         try:
             async with aiohttp.ClientSession() as session:
@@ -521,7 +521,7 @@ class FixSocials(Extension):
         except (aiohttp.ClientError, asyncio.TimeoutError):
             return False
 
-    @cached(LFUCache(maxsize=1000))
+    @cached(LRUCache(maxsize=1000))
     async def format_number_str(self, num):
         if num >= 1000:
             powers = ["", "k", "M", "B", "T"]

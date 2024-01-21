@@ -1,7 +1,7 @@
 import os, aiohttp, psutil, platform, uuid, time, datetime
 from dotenv import load_dotenv
 from asyncache import cached
-from cachetools import LFUCache
+from cachetools import LRUCache
 from interactions import (
     Extension,
     Embed,
@@ -22,7 +22,7 @@ class Utilities(Extension):
     start_time = time.time()
     load_dotenv()
 
-    @cached(LFUCache(maxsize=1000))
+    @cached(LRUCache(maxsize=1000))
     async def get_currency_conversion(
         self, base_currency: str, target_currency: str, api_key: str
     ) -> dict:
