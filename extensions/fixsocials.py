@@ -222,7 +222,14 @@ class FixSocials(Extension):
             timestamp=int(video_id) >> 32,
         )
         embed.set_author(name="@" + author, icon_url=author_avatar)
-        await ctx.send(embed=embed, components=components if ctx.message.created_at.timestamp() < (await ctx.channel.history(limit=10).flatten())[0].created_at.timestamp() else None, ephemeral=True)
+        await ctx.send(
+            embed=embed,
+            components=components
+            if ctx.message.created_at.timestamp()
+            < (await ctx.channel.history(limit=10).flatten())[0].created_at.timestamp()
+            else None,
+            ephemeral=True,
+        )
 
     async def process_urls(
         self,
