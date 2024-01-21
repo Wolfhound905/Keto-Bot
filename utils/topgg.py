@@ -30,6 +30,12 @@ async def topgg_vote_embed():
         components, embed = None, None
         return components, embed
 
+    tips = [
+        "Click the buttons below TikTok embeds to view more information",
+        'Delete replies to your messages with the "Delete Fixed Embed" context menu application',
+        'Clone multiple emojis at once with the "Steal Emojis" context menu application',
+    ]
+
     components = [
         Button(
             style=ButtonStyle.URL,
@@ -51,7 +57,7 @@ async def topgg_vote_embed():
         ),
     ]
     embed = Embed(
-        description=f"*Enjoying {bot_name}? Please support us with the links below!*",
+        description=f"*Enjoying {bot_name}? Please support us with the links below!\n\nTip: {random.choice(tips)}*",
         color=0xFF3366,
     )
 
