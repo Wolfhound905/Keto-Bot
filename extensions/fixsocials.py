@@ -225,8 +225,12 @@ class FixSocials(Extension):
         await ctx.send(
             embed=embed,
             components=components
-            if ctx.message.created_at.timestamp()
-            < (await ctx.channel.history(limit=5).flatten())[4].created_at.timestamp()
+            if (
+                history := await ctx.channel.history(
+                    limit=max(5, len(await ctx.channel.history(limit=5).flatten()))
+                ).flatten()
+            )
+            and ctx.message.created_at.timestamp() < history[-1].created_at.timestamp()
             else None,
             ephemeral=True,
         )
